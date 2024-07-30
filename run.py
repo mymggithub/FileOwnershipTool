@@ -60,7 +60,7 @@ def ProcessDirectoryPermissions(directory):
 				if not TakeOwnership(root) or not GrantFullAdmin(root):
 					log_error(f"Failed to process root directory: {root}")
 				if not TakeOwnership(file_path) or not GrantFullAdmin(file_path):
-					log_error(f"Failed to process file: {file_path}")
+					log_error(f"Failed to process file after root: {file_path}")
 			
 			processed_items += 1
 			print_progress(processed_items, total_items)
