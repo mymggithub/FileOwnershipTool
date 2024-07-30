@@ -19,7 +19,7 @@ def GrantFullAdmin(file_path):
 		if "Failed processing 0 files" in log_message:
 			return True
 		else:
-			log_error(f"granting permissions {file_path}: {log_message}")
+			log_error(f"Granting permissions {file_path}: {log_message}")
 	except Exception as e:
 		log_error(f"Failed to granting permissions for {file_path}: {e}")
 	return False
@@ -30,7 +30,7 @@ def TakeOwnership(file_path):
 		if "SUCCESS:" in log_message:
 			return True
 		else:
-			log_error(f"ownership {file_path}: {log_message}")
+			log_error(f"Ownership {file_path}: {log_message}")
 	except Exception as e:
 		log_error(f"Failed to take ownership for {file_path}: {e}")
 	return False
