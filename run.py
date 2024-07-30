@@ -27,12 +27,22 @@ def TakeOwnership(file_path):
 	# f'takeown /F "{file_path}" /R /D Y'
 	try:
 		log_message = subprocess.check_output(f'takeown /F "{file_path}"', shell=True).decode('utf-8')
-		if "SUCCESS:" in log_message:
+		if "SUCCESS:" in log_message or "CORRECTO:" in log_message:
 			return True
 		else:
 			log_error(f"Ownership {file_path}: {log_message}")
 	except Exception as e:
 		log_error(f"Failed to take ownership for {file_path}: {e}")
+	return False
+def AddUser(file_path):
+	try:
+		log_message = subprocess.check_output(f'icacls "{file_path}" /grant "%USERNAME%":(OI)(CI)F', shell=True).decode('utf-8')
+		if "SUCCESS:" in log_message or "CORRECTO:" in log_message:
+			return True
+		else:
+			log_error(f"Add User {file_path}: {log_message}")
+	except Exception as e:
+		log_error(f"Failed to take add user for {file_path}: {e}")
 	return False
 def ProcessDirectoryPermissions(directory):
 	processed_items = 0
@@ -54,12 +64,21 @@ def ProcessDirectoryPermissions(directory):
 			if file == log_file_path:
 				continue
 			file_path = os.path.join(root, file)
-			if not TakeOwnership(file_path) or not GrantFullAdmin(file_path):
+			own = TakeOwnership(file_path)
+			granted = GrantFullAdmin(file_path)
+			added = AddUser(file_path)
+			if not own or not granted or not added:
 				log_error(f"Failed to process file: {file_path}")
 			else:
-				if not TakeOwnership(root) or not GrantFullAdmin(root):
+				own = TakeOwnership(root)
+				granted = GrantFullAdmin(root)
+				added = AddUser(root)
+				if not own or not granted or not added:
 					log_error(f"Failed to process root directory: {root}")
-				if not TakeOwnership(file_path) or not GrantFullAdmin(file_path):
+				own = TakeOwnership(file_path)
+				granted = GrantFullAdmin(file_path)
+				added = AddUser(file_path)
+				if not own or not granted or not added:
 					log_error(f"Failed to process file after root: {file_path}")
 			
 			processed_items += 1
@@ -67,7 +86,10 @@ def ProcessDirectoryPermissions(directory):
 		
 		for dir in dirs:
 			dir_path = os.path.join(root, dir)
-			if not TakeOwnership(dir_path) or not GrantFullAdmin(dir_path):
+			own = TakeOwnership(dir_path)
+			granted = GrantFullAdmin(dir_path)
+			added = AddUser(dir_path)
+			if not own or not granted or not added:
 				log_error(f"Failed to process directory: {dir_path}")
 			processed_items += 1
 			print_progress(processed_items, total_items)
