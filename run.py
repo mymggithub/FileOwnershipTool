@@ -20,7 +20,7 @@ def GrantFullAdmin(file_path):
 		if result.returncode == 0:
 			return True
 		else:
-			log_message = result.stderr.decode('utf-8', errors='replace')
+			log_message = result.stderr
 			log_error(f"Error granting Administrators permissions on '{file_path}': {log_message}")
 		#log_message = subprocess.check_output(command, shell=True).decode('utf-8', errors='replace')
 		#if "Failed processing 0 files" in log_message:
@@ -38,7 +38,7 @@ def TakeOwnership(file_path):
 		if result.returncode == 0:
 			return True
 		else:
-			log_message = result.stderr.decode('utf-8', errors='replace')
+			log_message = result.stderr
 			log_error(f"Error taking ownership on '{file_path}': {log_message}")
 		#log_message = subprocess.check_output(command, shell=True).decode('utf-8', errors='replace')
 		#if "SUCCESS:" in log_message or "CORRECTO:" in log_message:
@@ -56,7 +56,7 @@ def AddUser(file_path):
 		if result.returncode == 0:
 			return True
 		else:
-			log_message = result.stderr.decode('utf-8', errors='replace')
+			log_message = result.stderr
 			log_error(f"Error adding user on '{file_path}': {log_message}")
 		#if "SUCCESS:" in log_message or "CORRECTO:" in log_message:
 			#return True
