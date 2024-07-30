@@ -3,10 +3,12 @@ import subprocess
 import sys
 
 log_file_path = "deletion_errors.log"
+ignore_errors = True
 
 def log_error(message):
-	with open(log_file_path, 'a', encoding='utf-8') as log_file:
-		log_file.write(message + '\n')
+	if not ignore_errors:
+		with open(log_file_path, 'a', encoding='utf-8') as log_file:
+			log_file.write(message + '\n')
 def print_progress(processed, total):
 	progress = processed / total
 	bar_length = 40
@@ -22,9 +24,9 @@ def GrantFullAdmin(file_path):
 			return True
 		else:
 			log_message = result.stderr
-			log_error(f"Error granting Administrators permissions on '{file_path}': {log_message}")
+			log_error(f'Error granting Administrators permissions on "{file_path}": "{log_message}"')
 	except Exception as e:
-		log_error(f"Failed to granting permissions for {file_path}: {e}")
+		log_error(f'Failed to granting permissions for "{file_path}": "{e}"')
 	return False
 def TakeOwnership(file_path):
 	# f'takeown /F "{file_path}" /R /D Y'
@@ -35,9 +37,9 @@ def TakeOwnership(file_path):
 			return True
 		else:
 			log_message = result.stderr
-			log_error(f"Error taking ownership on '{file_path}': {log_message}")
+			log_error(f'Error taking ownership on "{file_path}": "{log_message}"')
 	except Exception as e:
-		log_error(f"Failed to take ownership for {file_path}: {e}")
+		log_error(f'Failed to take ownership for "{file_path}": "{e}"')
 	return False
 def AddUser(file_path):
 	try:
@@ -47,15 +49,15 @@ def AddUser(file_path):
 			return True
 		else:
 			log_message = result.stderr
-			log_error(f"Error adding user on '{file_path}': {log_message}")
+			log_error(f'Error adding user on "{file_path}": "{log_message}"')
 	except Exception as e:
-		log_error(f"Failed to take add user for {file_path}: {e}")
+		log_error(f'Failed to add user for "{file_path}": "{e}"')
 	return False
 def ProcessDirectoryPermissions(directory):
 	processed_items = 0
 	if not os.path.exists(directory):
-		log_error(f"The specified path does not exist: {directory}")
-		print(f"The specified path does not exist: {directory}")
+		log_error(f'The specified path does not exist: "{directory}"')
+		print(f'The specified path does not exist: "{directory}"')
 	
 	all_items = []
 	for root, dirs, files in os.walk(directory, topdown=False):
@@ -75,18 +77,18 @@ def ProcessDirectoryPermissions(directory):
 			granted = GrantFullAdmin(file_path)
 			added = AddUser(file_path)
 			if not own or not granted or not added:
-				log_error(f"Failed to process file: {file_path}")
+				log_error(f'Failed to process file: "{file_path}"')
 			else:
 				own = TakeOwnership(root)
 				granted = GrantFullAdmin(root)
 				added = AddUser(root)
 				if not own or not granted or not added:
-					log_error(f"Failed to process root directory: {root}")
+					log_error(f'Failed to process root directory: "{root}"')
 				own = TakeOwnership(file_path)
 				granted = GrantFullAdmin(file_path)
 				added = AddUser(file_path)
 				if not own or not granted or not added:
-					log_error(f"Failed to process file after root: {file_path}")
+					log_error(f'Failed to process file after root: "{file_path}"')
 			
 			processed_items += 1
 			print_progress(processed_items, total_items)
@@ -97,11 +99,11 @@ def ProcessDirectoryPermissions(directory):
 			granted = GrantFullAdmin(dir_path)
 			added = AddUser(dir_path)
 			if not own or not granted or not added:
-				log_error(f"Failed to process directory: {dir_path}")
+				log_error(f'Failed to process directory: "{dir_path}"')
 			processed_items += 1
 			print_progress(processed_items, total_items)
 
 current_dir = os.getcwd()
 # directory = "G:\\FileOwnershipTool"
-print("Current working directory:", current_dir)
+print(f'Currently working on directory: "{current_dir}"')
 ProcessDirectoryPermissions(current_dir)
