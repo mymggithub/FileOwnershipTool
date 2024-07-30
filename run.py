@@ -14,8 +14,9 @@ def print_progress(processed, total):
 	progress_text = f"\rProgress: [{'#' * block + '-' * (bar_length - block)}] {round(progress * 100, 2)}%"
 	print(progress_text, end='')
 def GrantFullAdmin(file_path):
+	# f'icacls "{file_path}" /grant Administrators:F /T /C /Q'
 	try:
-		command = f'icacls "{file_path}" /grant Administrators:F /T /C /Q'
+		command = f'icacls "{file_path}" /grant Administrators:F /C /Q'
 		result = subprocess.run(command, shell=True, capture_output=True, text=True)
 		if result.returncode == 0:
 			return True
