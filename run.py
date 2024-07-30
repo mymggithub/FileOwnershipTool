@@ -5,7 +5,7 @@ import sys
 log_file_path = "deletion_errors.log"
 
 def log_error(message):
-	with open(log_file_path, 'a') as log_file:
+	with open(log_file_path, 'a', encoding='utf-8') as log_file:
 		log_file.write(message + '\n')
 def print_progress(processed, total):
 	progress = processed / total
@@ -15,7 +15,7 @@ def print_progress(processed, total):
 	print(progress_text, end='')
 def GrantFullAdmin(file_path):
 	try:
-		log_message = subprocess.check_output(f'icacls "{file_path}" /grant Administrators:F /T /C /Q', shell=True).decode('utf-8')
+		log_message = subprocess.check_output(f'icacls "{file_path}" /grant Administrators:F /T /C /Q', shell=True).decode('utf-8', errors='replace')
 		if "Failed processing 0 files" in log_message:
 			return True
 		else:
@@ -26,7 +26,7 @@ def GrantFullAdmin(file_path):
 def TakeOwnership(file_path):
 	# f'takeown /F "{file_path}" /R /D Y'
 	try:
-		log_message = subprocess.check_output(f'takeown /F "{file_path}"', shell=True).decode('utf-8')
+		log_message = subprocess.check_output(f'takeown /F "{file_path}"', shell=True).decode('utf-8', errors='replace')
 		if "SUCCESS:" in log_message or "CORRECTO:" in log_message:
 			return True
 		else:
@@ -36,7 +36,7 @@ def TakeOwnership(file_path):
 	return False
 def AddUser(file_path):
 	try:
-		log_message = subprocess.check_output(f'icacls "{file_path}" /grant "%USERNAME%":(OI)(CI)F', shell=True).decode('utf-8')
+		log_message = subprocess.check_output(f'icacls "{file_path}" /grant "%USERNAME%":(OI)(CI)F', shell=True).decode('utf-8', errors='replace')
 		if "SUCCESS:" in log_message or "CORRECTO:" in log_message:
 			return True
 		else:
